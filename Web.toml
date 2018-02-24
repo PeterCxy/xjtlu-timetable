@@ -1,0 +1,4 @@
+default-target = "asmjs-unknown-emscripten"
+
+[cargo-web]
+minimum-version = "0.6.0"

@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>XJTLU Timetable Parser</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+      #main {
+        margin: 5px;
+      }
+
+      #paste-area {
+        min-height: 200px;
+        max-height: 200px;
+        height: 200px;
+        overflow: scroll;
+        margin: 10px;
+        padding: 5px;
+        border-style: solid;
+        border-color: #999999;
+        border-width: 2px;
+        border-radius: 5px;
+        text-align: left;
+      }
+
+      #paste-area:focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card border-primary text-center">
+        <div id="main" class="card-block">
+          <p>Please copy the whole webpage of your XJTLU class timetable and paste it below: </p>
+          <div id="paste-area" contenteditable="true"></div>
+          <br/>
+          <a id="submit" href="#" class="btn btn-info">Submit</a>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="./xjtlu-timetable.js"></script>
+  </body>
+</html>
