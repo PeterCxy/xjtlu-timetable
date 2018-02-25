@@ -2,3 +2,6 @@ default-target = "asmjs-unknown-emscripten"
 
 [cargo-web]
 minimum-version = "0.6.0"
+
+[target.emscripten]
+link-args = ["-O3", "--llvm-lto", "3", "--closure", "1"]
