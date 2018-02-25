@@ -1,7 +1,7 @@
+use parser::parse;
 use std::rc::Rc;
-use stdweb::web::{alert, IEventTarget, Element};
+use stdweb::web::{IEventTarget, Element};
 use stdweb::web::event::{IEvent, ClickEvent};
-use util::InnerHTML;
 
 pub struct App {
     elem_input: Element,
@@ -31,6 +31,7 @@ trait AppImpl {
 impl AppImpl for Rc<App> {
     fn on_submit(&self, ev: ClickEvent) {
         ev.prevent_default();
-        alert(&self.elem_input.inner_html());
+        parse(&self.elem_input).unwrap();
+        //alert(&self.elem_input.inner_html());
     }
 }

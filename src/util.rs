@@ -1,4 +1,5 @@
-use stdweb::web::INode;
+use stdweb::Value;
+use stdweb::web::{IElement, INode, Element};
 
 #[allow(unused_macros)]
 macro_rules! clone {
@@ -35,14 +36,24 @@ macro_rules! clone {
     );
 }
 
-pub trait InnerHTML {
-    fn inner_html(&self) -> String;
+pub trait ToElement {
+    fn to_element(&self) -> Option<Element>;
 }
 
-impl<T> InnerHTML for T where T: INode {
-    fn inner_html(&self) -> String {
+impl<T: INode> ToElement for T {
+    fn to_element(&self) -> Option<Element> {
+        self.as_ref().clone().downcast()
+    }
+}
+
+pub trait ElementAttribute {
+    fn get_attribute(&self, name: &str) -> Value;
+}
+
+impl<T: IElement> ElementAttribute for T {
+    fn get_attribute(&self, name: &str) -> Value {
         js!(
-            return @{self.as_ref()}.innerHTML;
-        ).into_string().unwrap()
+            return @{self.as_ref()}.getAttribute(@{name});
+        )
     }
 }

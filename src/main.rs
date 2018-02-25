@@ -3,6 +3,7 @@ extern crate stdweb;
 
 #[macro_use]
 mod util;
+mod parser;
 mod app;
 
 use stdweb::web::{document, IParentNode};
