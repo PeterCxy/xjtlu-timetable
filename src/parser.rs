@@ -47,6 +47,10 @@ struct RowSpanCell {
  * All the information should be in this list.
  */
 fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
+    if rows.len() == 0 {
+        return Err("Invalid timetable".to_string());
+    }
+    
     let mut ret: Vec<Class> = Vec::new();
     let mut row_span_cells: Vec<RowSpanCell> = Vec::new();
     let mut pending_span_cells: Vec<RowSpanCell> = Vec::new();
