@@ -35,7 +35,13 @@ impl AppImpl for Rc<App> {
         match parse(&self.elem_input).map(|r| ical::classes_to_ical(&r).serialize()) {
             Ok(cal) => {
                 js!(
-                    window.location = "data:text/calendar;base64," + btoa(@{cal});
+                    // TODO: Rewrite this in Rust (Maybe?) or show a link in dialog
+                    var link = document.createElement("a");
+                    link.download = "timetable.ics";
+                    link.href = "data:text/calendar;base64," + btoa(@{cal});
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 );
             },
             Err(err) => alert(&err)
