@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta charset="utf-8">
     <title>XJTLU Timetable Parser</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
@@ -33,6 +34,7 @@
           <p>Please copy the whole webpage of your XJTLU class timetable and paste it below: </p>
           <div id="paste-area" contenteditable="true"></div>
           <br/>
+          <a id="help" href="#" class="btn btn-info">Help</a>
           <a id="submit" href="#" class="btn btn-info">Submit</a>
         </div>
       </div>
@@ -66,6 +68,31 @@
           </div>
           <div class="modal-body">
             <p id="text-info"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="dialog-help" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Help</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>This is (yet another but done the correct way) tool to export XJTLU class timetable as an iCal(<code>.ics</code>) file which can be imported into iOS Calendar / Google (Android) Calendar and many more calendar apps.</p>
+            <p>这是 (另一个但更科学的) 将 XJTLU 课表导出成 iCal(<code>.ics</code>) 文件的工具。iCal 文件可被导入到 iOS 日历 / Google (Android) 日历 以及其他更多支持日历的 App 中。</p>
+            <p>Just log in to your E-bridge, copy the whole timetable and paste into the box on this page, click submit, and your exported timetable will be ready to download.</p>
+            <p>请直接在 E-bridge 的课表页面全选、复制，并粘贴到本页面的框中，然后点击 Submit，你的导出后的课表将立即可以下载使用。</p>
+            <p>This webpage has no backend and do not require any credential about your XJTLU account.</p>
+            <p>本页面没有后端服务器，也完全不需要任何关于 XJTLU 账户的信息（不需要用户名也不需要密码）。</p>
+            <p>Nothing will be submitted onto any server at all. You could verify this by either using your browser's debug tool or read the <a target="_blank" href="https://github.com/PeterCxy/xjtlu-timetable">code</a>.</p>
+            <p>任何信息都不会被提交到任何服务器。您可以使用您的浏览器的调试工具或 <a target="_blank" href="https://github.com/PeterCxy/xjtlu-timetable">阅读源码</a> 来确认。</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

@@ -15,8 +15,10 @@ use stdweb::web::{document, IParentNode};
 fn main() {
     let elem_input = document().query_selector("#paste-area").unwrap().unwrap();
     let elem_submit = document().query_selector("#submit").unwrap().unwrap();
+    let elem_help = document().query_selector("#help").unwrap().unwrap();
+    let dialog_help = document().query_selector("#dialog-help").unwrap().unwrap();
     let dialog_download = document().query_selector("#dialog-download").unwrap().unwrap();
     let dialog_info = document().query_selector("#dialog-info").unwrap().unwrap();
-    let app = app::App::new(elem_input, elem_submit, dialog_download, dialog_info);
+    let app = app::App::new(elem_input, elem_submit, elem_help, dialog_help, dialog_download, dialog_info);
     app.run();
 }

@@ -9,15 +9,22 @@ use util::ElementAttribute;
 pub struct App {
     elem_input: Element,
     elem_submit: Element,
+    elem_help: Element,
+    dialog_help: StaticDialog,
     dialog_download: DownloadDialog,
     dialog_info: InfoDialog
 }
 
 impl App {
-    pub fn new(elem_input: Element, elem_submit: Element, dialog_download: Element, dialog_info: Element) -> App {
+    pub fn new(
+        elem_input: Element, elem_submit: Element, elem_help: Element,
+        dialog_help: Element, dialog_download: Element, dialog_info: Element
+    ) -> App {
         App {
             elem_input,
             elem_submit,
+            elem_help,
+            dialog_help: StaticDialog(dialog_help),
             dialog_download: DownloadDialog(dialog_download),
             dialog_info: InfoDialog(dialog_info)
         }
@@ -28,6 +35,10 @@ impl App {
         _self.elem_submit.add_event_listener(clone!(_self; |ev: ClickEvent| {
             _self.on_submit(ev);
         }));
+
+        _self.elem_help.add_event_listener(clone!(_self; |ev: ClickEvent| {
+            _self.on_help(ev);
+        }));
     }
 }
 
@@ -35,6 +46,7 @@ trait AppImpl {
     fn show_download_dialog(&self, content: String);
     fn show_info_dialog(&self, info: String);
     fn on_submit(&self, ev: ClickEvent);
+    fn on_help(&self, ev: ClickEvent);
 }
 
 impl AppImpl for Rc<App> {
@@ -55,6 +67,11 @@ impl AppImpl for Rc<App> {
             Err(err) => self.show_info_dialog(err)
         }
     }
+
+    fn on_help(&self, ev: ClickEvent) {
+        ev.prevent_default();
+        self.dialog_help.show();
+    }
 }
 
 trait Dialog {
@@ -64,6 +81,14 @@ trait Dialog {
         js!(
             $(@{self.get_element().as_ref()}).modal("show");
         );
+    }
+}
+
+struct StaticDialog(Element);
+
+impl Dialog for StaticDialog {
+    fn get_element(&self) -> &Element {
+        &self.0
     }
 }
 
