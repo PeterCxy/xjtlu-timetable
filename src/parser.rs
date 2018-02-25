@@ -128,9 +128,9 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                 }
 
                 // Parse the class information
-                let text = column_elem.text_content()
-                    .ok_or(format!("Class empty at {}:{}", row_index, col_index))?;
-                ret.push(parse_class_content(col_index, current_start_time.clone(), rowspan_value, &text)?);
+                /*let text = column_elem.text_content()
+                    .ok_or(format!("Class empty at {}:{}", row_index, col_index))?;*/
+                ret.push(parse_class_content(row_index, col_index, current_start_time.clone(), rowspan_value, &column_elem)?);
             }
         }
 
@@ -156,11 +156,25 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
  * >  location
  * >  Week: x-y, z-w, t, ...
  */
-fn parse_class_content(day: usize, class_start: ClassTime, len: usize, content: &str) -> Result<Class, String> {
-    let lines: Vec<_> = content.lines()
-        .map(|l| l.trim())
-        .filter(|l| l != &"")
-        .collect();
+fn parse_class_content(row_index: usize, day: usize, class_start: ClassTime, len: usize, content: &Element) -> Result<Class, String> {
+    // Get all the lines from the current cell
+    // We can't use text_content() and just split()
+    // because different browsers have different logic on
+    // how to add line breaks
+    let lines = content.query_selector_all("tr.inR")
+        .map_err(|_| format!("Invalid cell at {}:{}", row_index, day))?
+        .iter()
+        .map(|l| l.text_content().ok_or(format!("Invalid cell at {}:{}", row_index, day)))
+        .fold(Ok(Vec::new()), |x, y| {
+            if let Ok(mut v) = x {
+                if let Ok(line) = y {
+                    v.push(line.replace("\n", "").trim().to_string());
+                    return Ok(v);
+                }
+            }
+            Err(format!("Invalid cell at {}:{}", row_index, day))
+        })?;
+
     if lines.len() != 4 || !lines[3].starts_with("Week:") {
         return Err("Information corrupted".to_string());
     }
