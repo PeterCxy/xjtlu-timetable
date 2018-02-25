@@ -1,4 +1,5 @@
 use parser::parse;
+use ical::{self, ICalElement};
 use std::rc::Rc;
 use stdweb::web::{alert, IEventTarget, Element};
 use stdweb::web::event::{IEvent, ClickEvent};
@@ -31,7 +32,13 @@ trait AppImpl {
 impl AppImpl for Rc<App> {
     fn on_submit(&self, ev: ClickEvent) {
         ev.prevent_default();
-        alert(&format!("{:?}", parse(&self.elem_input)));
-        //alert(&self.elem_input.inner_html());
+        match parse(&self.elem_input).map(|r| ical::classes_to_ical(&r).serialize()) {
+            Ok(cal) => {
+                js!(
+                    window.location = "data:text/calendar;base64," + btoa(@{cal});
+                );
+            },
+            Err(err) => alert(&err)
+        }
     }
 }

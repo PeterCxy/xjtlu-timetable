@@ -4,19 +4,19 @@ use util::{ToElement, ElementAttribute};
 
 #[derive(Clone, Debug)]
 pub struct ClassTime {
-    hour: usize,
-    half: bool
+    pub hour: usize,
+    pub half: bool
 }
 
 #[derive(Debug)]
 pub struct Class {
-    title: String,
-    lecturer: String,
-    location: String,
-    day: usize, // Day in a week
-    weeks: [bool; 14], // Specify whether a class is available on week x
-    start: ClassTime, 
-    len: usize // length in half-hours
+    pub title: String,
+    pub lecturer: String,
+    pub location: String,
+    pub day: usize, // Day in a week
+    pub weeks: [bool; 14], // Specify whether a class is available on week x
+    pub start: ClassTime, 
+    pub len: usize // length in half-hours
 }
 
 /*

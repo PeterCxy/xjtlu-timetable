@@ -1,8 +1,11 @@
+extern crate chrono;
 #[macro_use]
 extern crate stdweb;
 
+mod constants;
 #[macro_use]
 mod util;
+mod ical;
 mod parser;
 mod app;
 

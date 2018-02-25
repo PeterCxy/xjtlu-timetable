@@ -4,4 +4,5 @@ version = "0.1.0"
 authors = ["Peter Cai <peter@typeblog.net>"]
 
 [dependencies]
+chrono = "0.4"
 stdweb = "0.4"
