@@ -1,21 +1,21 @@
 use stdweb::unstable::TryInto;
-use stdweb::web::{alert, IElement, INode, IParentNode, Element, NodeList};
+use stdweb::web::{IElement, INode, IParentNode, Element, NodeList};
 use util::{ToElement, ElementAttribute};
 
-pub enum Weekdays {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday
+#[derive(Clone, Debug)]
+pub struct ClassTime {
+    hour: usize,
+    half: bool
 }
 
+#[derive(Debug)]
 pub struct Class {
     title: String,
     lecturer: String,
     location: String,
-    day: Weekdays,
-    start: String, 
+    day: usize, // Day in a week
+    weeks: [bool; 14], // Specify whether a class is available on week x
+    start: ClassTime, 
     len: usize // length in half-hours
 }
 
@@ -66,6 +66,14 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
         if coltitle == "" {
             continue;
         }
+        let time_split: Vec<_> = coltitle.trim().split(":").collect();
+        if time_split.len() != 2 {
+            return Err(format!("Invalid time at row {}", row_index));
+        }
+        let current_start_time = ClassTime {
+            hour: time_split[0].parse().map_err(|_| format!("Invalid hour at row {}", row_index))?,
+            half: time_split[1] == "30"
+        };
 
         // Find all the grid cells
         let row_columns = row_elem.query_selector_all("td.gridcell")
@@ -98,7 +106,8 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                 .ok_or(format!("Invalid column {}:{}", row_index, col_index))?;
 
             // If the cell is a `nonemptycell` then it represents a class
-            // and have a `rowspan` attribute
+            // and have a `rowspan` attribute that corresponds to the half-hours
+            // a class has.
             if column_elem.class_list().contains("nonemptycell") {
                 let rowspan_value: usize = column_elem.get_attribute("rowspan").try_into()
                     .map_err(|_| ())
@@ -118,8 +127,10 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                     return Err(format!("Invalid class at {}:{}", row_index, col_index));
                 }
 
-                // TODO: finish parsing
-                alert(&format!("{}:{}: {:?}", row_index, col_index, column_elem.text_content()));
+                // Parse the class information
+                let text = column_elem.text_content()
+                    .ok_or(format!("Class empty at {}:{}", row_index, col_index))?;
+                ret.push(parse_class_content(col_index, current_start_time.clone(), rowspan_value, &text)?);
             }
         }
 
@@ -135,4 +146,59 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
         row_span_cells.retain(|cell| cell.remaining_rows != 0);
     }
     Ok(ret)
+}
+
+/*
+ * Parse text in a cell representing a class
+ * format:
+ * >  title
+ * >  lecturers
+ * >  location
+ * >  Week: x-y, z-w, t, ...
+ */
+fn parse_class_content(day: usize, class_start: ClassTime, len: usize, content: &str) -> Result<Class, String> {
+    let lines: Vec<_> = content.lines()
+        .map(|l| l.trim())
+        .filter(|l| l != &"")
+        .collect();
+    if lines.len() != 4 || !lines[3].starts_with("Week:") {
+        return Err("Information corrupted".to_string());
+    }
+
+    // If the class is available on week x, we later set week[x - 1] = true
+    let mut weeks = [false; 14];
+
+    // Parse the week range string
+    let _weeks_text = lines[3].replace("Week:", "");
+    let weeks_text = _weeks_text.trim().split(",");
+    for week_range in weeks_text {
+        let start_end: Vec<_> = week_range.trim().split("-").collect();
+        if start_end.len() == 1 {
+            // Just one week
+            let w: usize = start_end[0].parse().map_err(|_| "Invalid week string".to_string())?;
+            weeks[w - 1] = true;
+            continue;
+        }
+        if start_end.len() != 2 {
+            return Err("Information corrupted".to_string());
+        }
+        let start: usize = start_end[0].parse().map_err(|_| "Invalid week string".to_string())?;
+        let end: usize = start_end[1].parse().map_err(|_| "Invalid week string".to_string())?;
+        if !(start > 0 && end > 0 && end > start) {
+            return Err("Information corrupted".to_string());
+        }
+        for i in (start - 1)..end {
+            weeks[i] = true;
+        }
+    }
+
+    Ok(Class {
+        title: lines[0].to_string(),
+        lecturer: lines[1].to_string(),
+        location: lines[2].to_string(),
+        day,
+        weeks,
+        start: class_start,
+        len
+    })
 }
