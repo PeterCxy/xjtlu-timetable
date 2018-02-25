@@ -48,6 +48,7 @@ impl<T: INode> ToElement for T {
 
 pub trait ElementAttribute {
     fn get_attribute(&self, name: &str) -> Value;
+    fn set_attribute(&self, name: &str, value: Value);
 }
 
 impl<T: IElement> ElementAttribute for T {
@@ -55,5 +56,11 @@ impl<T: IElement> ElementAttribute for T {
         js!(
             return @{self.as_ref()}.getAttribute(@{name});
         )
+    }
+
+    fn set_attribute(&self, name: &str, value: Value) {
+        js!(
+            @{self.as_ref()}.setAttribute(@{name}, @{value});
+        );
     }
 }
