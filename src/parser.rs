@@ -52,6 +52,7 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
     }
     
     let mut ret: Vec<Class> = Vec::new();
+    let mut col_to_weekday: Vec<usize> = Vec::new();
     let mut row_span_cells: Vec<RowSpanCell> = Vec::new();
     let mut pending_span_cells: Vec<RowSpanCell> = Vec::new();
 
@@ -59,6 +60,37 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
         // A row must be an Element
         let row_elem = r.to_element()
             .ok_or(format!("Invalid row {}", row_index))?;
+
+        if row_elem.class_list().contains("rowtitle") {
+            // The title row, for correspondence between column and weekdays
+            let weekdays = row_elem.query_selector_all("td")
+                .map_err(|_| "No proper header found".to_string())?
+                .iter()
+                .skip(1); // The first one is always empty
+            let mut current_weekday = 0;
+            for d in weekdays {
+                if current_weekday > 6 {
+                    return Err("Invalid header row: More than 7 days".to_string());
+                }
+
+                let colspan_value: usize = d.to_element()
+                    .ok_or("Invalid header".to_string())?
+                    .get_attribute("colspan").try_into()
+                    .map_err(|_| ())
+                    .and_then(|s: String| s.parse()
+                        .map_err(|_| ()))
+                    .unwrap_or(1); 
+
+                for _ in 0..colspan_value {
+                    col_to_weekday.push(current_weekday);
+                }
+                current_weekday += 1;
+            }
+        }
+
+        if col_to_weekday.len() < 7 {
+            return Err("Invalid header row: less than 7 days found".to_string());
+        }
 
         // A row must have a cell whose class is `coltitle` which
         // indicates the corresponding class time of this row.
@@ -105,6 +137,11 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                 }
             }
 
+            // Boundary check
+            if col_index > col_to_weekday.len() {
+                return Err("More columns found than weekdays".to_string());
+            }
+
             // A column must always be an element too.
             let column_elem = c.to_element()
                 .ok_or(format!("Invalid column {}:{}", row_index, col_index))?;
@@ -134,7 +171,7 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                 // Parse the class information
                 /*let text = column_elem.text_content()
                     .ok_or(format!("Class empty at {}:{}", row_index, col_index))?;*/
-                ret.push(parse_class_content(row_index, col_index, current_start_time.clone(), rowspan_value, &column_elem)?);
+                ret.push(parse_class_content(row_index, col_index, col_to_weekday[col_index], current_start_time.clone(), rowspan_value, &column_elem)?);
             }
         }
 
@@ -160,15 +197,15 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
  * >  location
  * >  Week: x-y, z-w, t, ...
  */
-fn parse_class_content(row_index: usize, day: usize, class_start: ClassTime, len: usize, content: &Element) -> Result<Class, String> {
+fn parse_class_content(row_index: usize, col_index: usize, day: usize, class_start: ClassTime, len: usize, content: &Element) -> Result<Class, String> {
     // Get all the lines from the current cell
     // We can't use text_content() and just split()
     // because different browsers have different logic on
     // how to add line breaks
     let lines = content.query_selector_all("tr.inR")
-        .map_err(|_| format!("Invalid cell at {}:{}", row_index, day))?
+        .map_err(|_| format!("Invalid cell at {}:{}", row_index, col_index))?
         .iter()
-        .map(|l| l.text_content().ok_or(format!("Invalid cell at {}:{}", row_index, day)))
+        .map(|l| l.text_content().ok_or(format!("Invalid cell at {}:{}", row_index, col_index)))
         .fold(Ok(Vec::new()), |x, y| {
             if let Ok(mut v) = x {
                 if let Ok(line) = y {
@@ -176,7 +213,7 @@ fn parse_class_content(row_index: usize, day: usize, class_start: ClassTime, len
                     return Ok(v);
                 }
             }
-            Err(format!("Invalid cell at {}:{}", row_index, day))
+            Err(format!("Invalid cell at {}:{}", row_index, col_index))
         })?;
 
     if lines.len() != 4 || !lines[3].starts_with("Week:") {
