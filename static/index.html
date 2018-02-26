@@ -31,11 +31,12 @@
     <div class="container">
       <div class="card border-primary text-center">
         <div id="main" class="card-block">
-          <p>Please copy the whole webpage of your XJTLU class timetable and paste it below: </p>
+          <p>Please copy the <b>whole webpage</b> of your XJTLU class timetable and paste it below: </p>
           <div id="paste-area" contenteditable="true"></div>
           <br/>
           <a id="help" href="#" class="btn btn-info">Help</a>
           <a id="submit" href="#" class="btn btn-info">Submit</a>
+          <a target="_blank" href="https://github.com/PeterCxy/xjtlu-timetable/issues" class="btn btn-info">Bug report</a>
         </div>
       </div>
     </div>
@@ -50,6 +51,8 @@
           </div>
           <div class="modal-body">
             <p>Your timetable has been successfully exported. <a id="link-download" href="#" download="timetable.ics">Download now</a></p>
+            <p><b>Please always compare your exported timetable with the original one and make sure they are the same.</b></p>
+            <p><b>请一定要检查导出后的课表是否与原版一致。</b></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -89,6 +92,8 @@
             <p>这是 (另一个但更科学的) 将 XJTLU 课表导出成 iCal(<code>.ics</code>) 文件的工具。iCal 文件可被导入到 iOS 日历 / Google (Android) 日历 以及其他更多支持日历的 App 中。</p>
             <p>Just log in to your E-bridge, copy the whole timetable and paste into the box on this page, click submit, and your exported timetable will be ready to download.</p>
             <p>请直接在 E-bridge 的课表页面全选、复制，并粘贴到本页面的框中，然后点击 Submit，你的导出后的课表将立即可以下载使用。</p>
+            <p><b>Please always compare your exported timetable with the original one and make sure they are the same.</b></p>
+            <p><b>请一定要检查导出后的课表是否与原版一致。</b></p>
             <p>This webpage has no backend and do not require any credential about your XJTLU account.</p>
             <p>本页面没有后端服务器，也完全不需要任何关于 XJTLU 账户的信息（不需要用户名也不需要密码）。</p>
             <p>Nothing will be submitted onto any server at all. You could verify this by either using your browser's debug tool or read the <a target="_blank" href="https://github.com/PeterCxy/xjtlu-timetable">code</a>.</p>
@@ -98,6 +103,7 @@
             <ul>
               <li>Chrome (Android / Desktop)</li>
               <li>Firefox (Desktop, Android version does not work)</li>
+              <li>Safari (iOS 11, desktop version not tested)</li>
             </ul>
             <p>If this tool is not working on your mobile phone, please export the timetable on your PC and copy / send it to your mobile phone later if needed.</p>
             <p>如果这个工具在你的手机上不能使用，请在电脑上导出后再拷贝/发送到手机。</p>
