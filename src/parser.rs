@@ -52,6 +52,7 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
     }
     
     let mut ret: Vec<Class> = Vec::new();
+    // Actually a Map from column to its corresponding weekday
     let mut col_to_weekday: Vec<usize> = Vec::new();
     let mut row_span_cells: Vec<RowSpanCell> = Vec::new();
     let mut pending_span_cells: Vec<RowSpanCell> = Vec::new();
@@ -63,6 +64,12 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
 
         if row_elem.class_list().contains("rowtitle") {
             // The title row, for correspondence between column and weekdays
+            // In some class timetables, one weekday may be split into
+            // multiple columns to have multiple classes for different
+            // weeks in the same time slot.
+            // By reading the `colspan` value of the headers, we can
+            // build a table of correspondence between column and its
+            // weekday index.
             let weekdays = row_elem.query_selector_all("td")
                 .map_err(|_| "No proper header found".to_string())?
                 .iter()
@@ -82,10 +89,18 @@ fn parse_rows(rows: NodeList) -> Result<Vec<Class>, String> {
                     .unwrap_or(1); 
 
                 for _ in 0..colspan_value {
+                    // We use an array to build the correspondence
+                    // It is actually used like a Map
+                    // The indexes
+                    // (col_to_weekday.len() - 1) to (col_to_weekday.len() - 1 + colspan_value)
+                    // all correspond to `current_weekday`
                     col_to_weekday.push(current_weekday);
                 }
                 current_weekday += 1;
             }
+
+            // The title row will contain nothing but the weekdays
+            continue;
         }
 
         if col_to_weekday.len() < 7 {
