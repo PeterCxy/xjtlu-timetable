@@ -7,15 +7,14 @@
 /*
  * Duration of the current semester.
  */
-pub const SEMESTER_START: (u32, u32) = (2, 25); // The day before the semester starts
-pub const SEMESTER_END: (u32, u32) = (6, 3); // The day the semester ends
+pub const SEMESTER_START: (u32, u32) = (9, 9); // The day before the semester starts
+pub const SEMESTER_END: (u32, u32) = (12, 21); // The day the semester ends
 
 /*
  * Days on which we will not have any classes
  */
 pub const VACATION_DAYS: &'static [(u32, u32)] = &[
-    (4, 5),
-    (5, 1)
+    (9, 24)
 ];
 
 /*
@@ -23,5 +22,5 @@ pub const VACATION_DAYS: &'static [(u32, u32)] = &[
  */
 pub const VACATION_WEEKS: &'static [(u32, u32)] = &[
     // Nothing here yet.
-    // TODO: DO A TEST ON THIS
+    (10, 1)
 ];

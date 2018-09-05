@@ -26,12 +26,12 @@ pub fn classes_to_ical(classes: &[Class]) -> ICalBuilder {
 
         if day == 0 {
             if VACATION_WEEKS.contains(&(current_date.month(), current_date.day())) {
-                // TODO: TEST IF THIS WORKS PROPERLY
                 for _ in 0..7 {
-                    current_date.succ();
+                    current_date = current_date.succ();
                 }
+            } else {
+                current_week += 1;
             }
-            current_week += 1;
         }
 
         // Skip vacations
